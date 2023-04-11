@@ -43,6 +43,9 @@ func main() {
 		fmt.Println("\t5. Create a comment")
 		fmt.Println("\t6. Get the list all comments")
 
+		fmt.Println("\t7. Update a user")
+		fmt.Println("\t8. Delete a user")
+
 		var command int
 		fmt.Print("\nYour command: ")
 		fmt.Scan(&command)
@@ -74,6 +77,29 @@ func main() {
 			for _, post := range posts {
 				fmt.Printf("%d. %s\t%s\t%s\t%s\t%d\n", post.ID.ID, post.Cover, post.Title, post.Content, post.Author.Name, len(post.Comments))
 			}
+		case 7:
+			fmt.Print("Give me an ID of existing user: ")
+			var id uint
+			fmt.Scan(&id)
+
+			var user models.User
+
+			fmt.Println("Empty user:", user)
+
+			result := db.First(&user, id)
+			if result.Error != nil {
+				log.Fatal(result.Error)
+			}
+
+			fmt.Println("Here is your user:", user)
+
+			fmt.Scan(&user.Name)
+			fmt.Scan(&user.Email)
+
+			db.Save(&user)
+
+			fmt.Println("User has been updated")
+			fmt.Println(user)
 		}
 	}
 }
