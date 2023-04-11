@@ -61,12 +61,20 @@ func main() {
 			fmt.Scan(&user.Name)
 			fmt.Print("Enter user's email: ")
 			fmt.Scan(&user.Email)
-			db.Create(&user)
+			result := db.Create(&user)
+			if result.Error != nil {
+				log.Fatal(result.Error)
+			}
 			fmt.Println("Successfully created new user with ID:", user.ID)
 		case 2:
 			fmt.Println("\nThe list of users in DB:")
 			var users []models.User
-			db.Preload("Posts").Preload("Comments").Find(&users)
+
+			db.Preload("Posts").
+				Preload("Comments").
+				Unscoped().
+				Find(&users)
+
 			for _, user := range users {
 				fmt.Printf("%d. %s\t%s\t%d\t%d\n", user.ID, user.Name, user.Email, len(user.Posts), len(user.Comments))
 			}
@@ -100,6 +108,20 @@ func main() {
 
 			fmt.Println("User has been updated")
 			fmt.Println(user)
+		case 8:
+			fmt.Print("Deleting user. Give me a valid ID: ")
+			var id uint
+			fmt.Scan(&id)
+			//result := db.Delete(&models.User{}, id)
+
+			var user models.User
+			user.ID = id
+
+			result := db.Delete(&user)
+			if result.Error != nil {
+				log.Fatal(result.Error)
+			}
+			fmt.Println("User has been deleted at", user.DeletedAt.Time)
 		}
 	}
 }
