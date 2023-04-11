@@ -67,6 +67,13 @@ func main() {
 			for _, user := range users {
 				fmt.Printf("%d. %s\t%s\t%d\t%d\n", user.ID, user.Name, user.Email, len(user.Posts), len(user.Comments))
 			}
+		case 4:
+			fmt.Println("\nThe list of posts in DB:")
+			var posts []models.Post
+			db.Preload("Comments").Preload("Author").Find(&posts)
+			for _, post := range posts {
+				fmt.Printf("%d. %s\t%s\t%s\t%s\t%d\n", post.ID.ID, post.Cover, post.Title, post.Content, post.Author.Name, len(post.Comments))
+			}
 		}
 	}
 }

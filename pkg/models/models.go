@@ -38,6 +38,8 @@ type Post struct {
 	Timestamps
 
 	Comments []Comment
+	//User     User
+	Author User `gorm:"foreignKey:UserID"`
 }
 
 type Comment struct {
