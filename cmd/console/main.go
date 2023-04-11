@@ -9,49 +9,57 @@ import (
 )
 
 const (
-	host     = "localhost" // 127.0.0.1
-	port     = 5432
-	user     = "postgres"
-	password = "postgres"
-	dbname   = "blog_service"
+	DBHost     = "localhost" // 127.0.0.1
+	DBPort     = 5432
+	DBUser     = "postgres"
+	DBPassword = "postgres"
+	DBName     = "blog_service"
 )
 
 func main() {
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Dushanbe", host, port, user, password, dbname)
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Dushanbe", DBHost, DBPort, DBUser, DBPassword, DBName)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("successfully connected")
+	fmt.Println("Successfully connected")
 
-	db.AutoMigrate(&models.User{}, &models.Post{}, &models.Comment{})
+	db.AutoMigrate(
+		&models.User{},
+		&models.Post{},
+		&models.Comment{},
+	)
 
-	user := models.User{}
-	//
-	//db.Create(&user)
+	for {
+		fmt.Println("\nApplication's functional:")
+		fmt.Println("\t0. Exit")
 
-	db.First(&user, 1)
+		fmt.Println("\t1. Create a user")
+		fmt.Println("\t2. Get the list all users")
 
-	fmt.Println("Selected user:", user)
+		fmt.Println("\t3. Create a post")
+		fmt.Println("\t4. Get the list all posts")
 
-	post := models.Post{
-		UserID:  user.ID,
-		Title:   "SOME TEXT",
-		Content: "Dubai",
+		fmt.Println("\t5. Create a comment")
+		fmt.Println("\t6. Get the list all comments")
+
+		var command int
+		fmt.Print("\nYour command: ")
+		fmt.Scan(&command)
+
+		switch command {
+		case 0:
+			fmt.Println("Bye!")
+			return
+		case 1:
+			fmt.Println("Creating a user...")
+			var user models.User
+			fmt.Print("Enter user's name: ")
+			fmt.Scan(&user.Name)
+			fmt.Print("Enter user's email: ")
+			fmt.Scan(&user.Email)
+			db.Create(&user)
+			fmt.Println("Successfully created new user with ID:", user.ID)
+		}
 	}
-
-	db.Create(&post)
-
-	fmt.Println("Created post:", post)
-
-	comment := models.Comment{
-		PostID: post.ID.ID,
-		UserID: user.ID,
-		Text:   "Some comment",
-	}
-
-	db.Create(&comment)
-
-	fmt.Println("Created comment:", comment)
-
 }
