@@ -52,7 +52,7 @@ func main() {
 			fmt.Println("Bye!")
 			return
 		case 1:
-			fmt.Println("Creating a user...")
+			fmt.Println("\nCreating a user...")
 			var user models.User
 			fmt.Print("Enter user's name: ")
 			fmt.Scan(&user.Name)
@@ -60,6 +60,13 @@ func main() {
 			fmt.Scan(&user.Email)
 			db.Create(&user)
 			fmt.Println("Successfully created new user with ID:", user.ID)
+		case 2:
+			fmt.Println("\nThe list of users in DB:")
+			var users []models.User
+			db.Preload("Posts").Preload("Comments").Find(&users)
+			for _, user := range users {
+				fmt.Printf("%d. %s\t%s\t%d\t%d\n", user.ID, user.Name, user.Email, len(user.Posts), len(user.Comments))
+			}
 		}
 	}
 }
